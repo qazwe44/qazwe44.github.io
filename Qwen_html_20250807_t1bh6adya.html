@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AES 解密工具</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f6f9;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    textarea, input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f8ff;
+      border: 1px solid #d0e8ff;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    .error {
+      color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔐 AES 解密工具</h1>
+
+  <label for="ciphertext">密文 (Base64 编码):</label>
+  <textarea id="ciphertext" placeholder="请输入经过 AES 加密并 Base64 编码的密文..."></textarea>
+
+  <label for="password">密码 (密钥):</label>
+  <input type="password" id="password" placeholder="请输入解密密码" />
+
+  <button onclick="decrypt()">解密</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+</div>
+
+<script>
+  function decrypt() {
+    const ciphertext = document.getElementById("ciphertext").value.trim();
+    const password = document.getElementById("password").value;
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = "block";
+    resultDiv.className = "result";
+
+    if (!ciphertext || !password) {
+      resultDiv.textContent = "❌ 请填写密文和密码！";
+      resultDiv.className += " error";
+      return;
+    }
+
+    try {
+      // 使用 CryptoJS 进行 AES 解密
+      const bytes = CryptoJS.AES.decrypt(ciphertext, password);
+      const plaintext = bytes.toString(CryptoJS.enc.Utf8);
+
+      if (plaintext.length === 0) {
+        resultDiv.textContent = "❌ 解密失败：密钥错误或密文无效！";
+        resultDiv.className += " error";
+      } else {
+        resultDiv.textContent = "✅ 解密成功：\n" + plaintext;
+      }
+    } catch (e) {
+      resultDiv.textContent = "❌ 解密出错：\n" + e.message;
+      resultDiv.className += " error";
+    }
+  }
+</script>
+
+</body>
+</html>
